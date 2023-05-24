@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import psutil
+import time
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
@@ -41,11 +42,16 @@ chunk_size = 1000
 X_chunks = np.array_split(X_train, len(X_train) // chunk_size)
 y_chunks = np.array_split(y_train, len(y_train) // chunk_size)
 
+# Start the timer for training
+start_time = time.time()
+
 # Train the model on each chunk
 for i in range(len(X_chunks)):
     X_chunk = X_chunks[i]
     y_chunk = y_chunks[i]
     knn.fit(X_chunk, y_chunk)
+
+training_time = (time.time() - start_time) * 1000
 
 # Load random data from CSV file
 random_df = pd.read_csv('dataset/random_data.csv')
@@ -75,7 +81,11 @@ X_test = imputer.transform(X_test)
 X_test = scaler.transform(X_test)
 
 # Make predictions on the test data and calculate accuracy score
+# Start the timer for testing
+start_time = time.time()
 y_pred = knn.predict(X_test)
+testing_time = (time.time() - start_time) * 1000
+
 accuracy = accuracy_score(y_test, y_pred)
 
 # Get system memory usage
@@ -84,6 +94,8 @@ print(f"Total Memory: {mem.total / (1024*1024*1024):.2f} GB")
 print(f"Available Memory: {mem.available / (1024*1024*1024):.2f} GB")
 print(f"Used Memory: {mem.used / (1024*1024*1024):.2f} GB")
 print(f"Memory Percent Used: {mem.percent:.2f}%")
+print(f"Training Time: {training_time:.2f}ms")
+print(f"Testing Time: {testing_time:.2f}ms")
 
 # Get process memory usage
 process = psutil.Process()

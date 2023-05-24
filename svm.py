@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import psutil
+import time
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
@@ -41,7 +42,11 @@ X_test = scaler.transform(X_test)
 
 # Train an SVM model on the train data
 svm = SVC()
+
+# Start the timer for training
+start_time = time.time()
 svm.fit(X_train, y_train)
+training_time = (time.time() - start_time) * 1000
 
 # Make predictions on the random data
 y_pred = svm.predict(X_test)
@@ -58,7 +63,12 @@ X_test = imputer.transform(X_test)
 X_test = scaler.transform(X_test)
 
 # Make predictions on the test data and calculate accuracy score
+
+# Start the timer for testing
+start_time = time.time()
 y_pred = svm.predict(X_test)
+testing_time = (time.time() - start_time) * 1000
+
 accuracy = accuracy_score(y_test, y_pred)
 
 # Get system memory usage
@@ -67,6 +77,8 @@ print(f"Total Memory: {mem.total / (1024*1024*1024):.2f} GB")
 print(f"Available Memory: {mem.available / (1024*1024*1024):.2f} GB")
 print(f"Used Memory: {mem.used / (1024*1024*1024):.2f} GB")
 print(f"Memory Percent Used: {mem.percent:.2f}%")
+print(f"Training Time: {training_time:.2f}ms")
+print(f"Testing Time: {testing_time:.2f}ms")
 
 # Get process memory usage
 process = psutil.Process()
